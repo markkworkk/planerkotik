@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Планировщик — расписание и ДЗ</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/timeline.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ═══════════════════════════════════════════════
+       ШАПКА
+  ═══════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">📅</div>
+      <div>
+        <div class="logo-text">Планировщик</div>
+        <div class="logo-sub">расписание &amp; домашние задания</div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="notif-btn" id="notif-btn" onclick="requestNotifPermission()">
+        🔔 Уведомления
+      </button>
+      <div class="themes">
+        <span class="theme-label">Тема:</span>
+        <button class="theme-btn t-blue active" onclick="setTheme('',this)"    title="Голубая"></button>
+        <button class="theme-btn t-dark"        onclick="setTheme('dark',this)" title="Тёмная"></button>
+        <button class="theme-btn t-pink"        onclick="setTheme('pink',this)" title="Розовая"></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Баннер запроса уведомлений -->
+  <div class="notif-banner" id="notif-banner">
+    <span>🔔 Разреши уведомления — и планировщик будет напоминать о событиях!</span>
+    <button onclick="requestNotifPermission()">Разрешить</button>
+    <span class="close" onclick="document.getElementById('notif-banner').classList.remove('visible')">×</span>
+  </div>
+
+  <!-- Баннер просмотра чужого расписания -->
+  <div class="view-banner" id="view-banner">
+    <span>👁 Вы смотрите: <strong class="guest-name">чужое расписание</strong></span>
+    <button onclick="switchToMine()">← Моё расписание</button>
+    <button onclick="clearGuest()" style="margin-left:auto;background:#ef4444;color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;">Удалить</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       НАВИГАЦИЯ ПО НЕДЕЛЯМ
+  ═══════════════════════════════════════════════ -->
+  <div class="nav-week">
+    <button class="week-arrow" onclick="shiftWeek(-1)">‹</button>
+    <span class="week-label" id="week-label"></span>
+    <button class="week-arrow" onclick="shiftWeek(1)">›</button>
+    <span class="week-type-badge" id="week-type-badge" style="display:none">Неделя A</span>
+  </div>
+
+  <!-- Дни недели -->
+  <div class="days" id="days-row"></div>
+
+  <!-- ═══════════════════════════════════════════════
+       ОСНОВНАЯ СЕТКА
+  ═══════════════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- ТАЙМЛАЙН -->
+    <div class="timeline">
+      <div class="timeline-header">
+        <span class="timeline-title" id="tl-title">Расписание</span>
+        <span class="readonly-badge" id="readonly-badge" style="display:none">👁 Только просмотр</span>
+      </div>
+      <div class="timeline-body" id="timeline-body"></div>
+    </div>
+
+    <!-- БОКОВАЯ ПАНЕЛЬ -->
+    <aside class="sidebar">
+
+      <!-- Добавить запись -->
+      <div class="card">
+        <div class="card-header">✏️ Добавить запись</div>
+        <div class="card-body">
+          <div class="form-group">
+            <span class="form-label">Название</span>
+            <input id="f-title" placeholder="Например: Алгебра упр. 14..." />
+
+            <span class="form-label">Время</span>
+            <input id="f-time" type="time" value="09:00" />
+
+            <span class="form-label">Тип</span>
+            <select id="f-type">
+              <option value="hw">📗 Домашнее задание</option>
+              <option value="ev">🌟 Событие</option>
+              <option value="ot">🔖 Другое</option>
+            </select>
+
+            <span class="form-label">Заметка</span>
+            <textarea id="f-note" placeholder="Детали, страницы, ссылки..."></textarea>
+
+            <span class="form-label">Напомнить за</span>
+            <select id="f-remind">
+              <option value="0">Без напоминания</option>
+              <option value="5">5 минут</option>
+              <option value="10">10 минут</option>
+              <option value="15">15 минут</option>
+              <option value="30">30 минут</option>
+              <option value="60">1 час</option>
+            </select>
+
+            <button class="form-submit" onclick="addEvent()">+ Добавить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Режим недели (A/B чередование) -->
+      <div class="card">
+        <div class="card-header">🔁 Режим недели</div>
+        <div class="card-body">
+          <div class="week-mode-tabs">
+            <button class="wm-tab" data-mode="single" onclick="setWeekMode('single')">
+              Одна неделя
+            </button>
+            <button class="wm-tab" data-mode="ab" onclick="setWeekMode('ab')">
+              Чередование A/B
+            </button>
+          </div>
+
+          <div class="week-mode-info" id="week-mode-info">
+            📋 <strong>Одна неделя</strong> — расписание повторяется каждую неделю.
+          </div>
+
+          <!-- Кнопки ручного переключения слота (только в режиме AB) -->
+          <div class="edit-week-btns" id="edit-week-btns" style="display:none">
+            <button class="edit-week-btn" data-slot="a" onclick="setEditingSlot('a')">
+              ✏️ Редактировать A
+            </button>
+            <button class="edit-week-btn" data-slot="b" onclick="setEditingSlot('b')">
+              ✏️ Редактировать B
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Статистика -->
+      <div class="card">
+        <div class="card-header">📊 Статистика</div>
+        <div class="card-body">
+          <div class="stats">
+            <div class="stat-card"><div class="stat-num" id="s-hw">0</div><div class="stat-label">ДЗ</div></div>
+            <div class="stat-card"><div class="stat-num" id="s-ev">0</div><div class="stat-label">События</div></div>
+            <div class="stat-card"><div class="stat-num" id="s-ot">0</div><div class="stat-label">Другое</div></div>
+            <div class="stat-card"><div class="stat-num" id="s-total">0</div><div class="stat-label">Всего</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ближайшие -->
+      <div class="card">
+        <div class="card-header">⏰ Ближайшие</div>
+        <div class="card-body">
+          <div class="upcoming-list" id="upcoming"></div>
+        </div>
+      </div>
+
+      <!-- Синхронизация -->
+      <div class="card">
+        <div class="card-header">🔗 Поделиться расписанием</div>
+        <div class="card-body">
+          <div class="sync-section">
+
+            <!-- Мой код -->
+            <span class="form-label">Мой код (отправь другу)</span>
+            <div class="sync-my-code" id="my-export-code">—</div>
+            <button class="sync-btn" onclick="copyMyCode()">📋 Скопировать мой код</button>
+
+            <div class="sync-divider">или вставь чужой</div>
+
+            <!-- Чужой код -->
+            <input
+              class="sync-input"
+              id="guest-code-input"
+              placeholder="Вставь код расписания друга..."
+            />
+            <button class="sync-btn outline" onclick="loadGuestCode()">👁 Посмотреть чужое</button>
+
+            <!-- Если уже загружено чужое -->
+            <div id="guest-loaded" style="display:none">
+              <button class="sync-btn" onclick="switchToGuest()" style="margin-bottom:6px">
+                👁 Переключиться на чужое
+              </button>
+              <button class="sync-btn danger" onclick="clearGuest()">🗑 Удалить чужое</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Очистить расписание -->
+      <div class="card">
+        <div class="card-header">🗑 Очистить</div>
+        <div class="card-body">
+          <button class="form-submit" style="background:#ef4444" onclick="clearSchedule()">
+            🗑 Удалить всё расписание
+          </button>
+        </div>
+      </div>
+
+      <!-- Легенда -->
+      <div class="card">
+        <div class="card-header">🎨 Легенда</div>
+        <div class="card-body">
+          <div class="legend">
+            <div class="legend-row"><div class="legend-dot hw"></div> Домашнее задание</div>
+            <div class="legend-row"><div class="legend-dot ev"></div> Событие</div>
+            <div class="legend-row"><div class="legend-dot ot"></div> Другое</div>
+          </div>
+          <div class="tip">
+            💡 Нажми на событие — откроются заметки.<br>
+            🔁 В режиме A/B — два разных расписания на чётные и нечётные недели.<br>
+            🔗 Поделись кодом с одноклассником — он увидит твоё расписание.
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<!-- Скрипты (порядок важен) -->
+<script src="js/storage.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

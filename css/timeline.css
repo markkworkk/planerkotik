@@ -1,0 +1,450 @@
+/* ============================================================
+   ПЛАНИРОВЩИК — timeline.css
+   Таймлайн, карточки событий, раскрывающиеся заметки
+   ============================================================ */
+
+/* ── Таймлайн ── */
+.timeline {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.timeline-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.timeline-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Бейдж "только просмотр" */
+.readonly-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--ot-bg);
+    color: var(--ot-text);
+    border: 1px solid var(--ot-border);
+}
+
+.timeline-body {
+    padding: 8px 16px 16px;
+}
+
+.hour-row {
+    display: flex;
+    gap: 10px;
+    min-height: 50px;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.hour-row:last-child {
+    border-bottom: none;
+}
+
+.hour-label {
+    font-size: 12px;
+    color: var(--muted);
+    width: 40px;
+    flex-shrink: 0;
+    padding-top: 6px;
+    font-variant-numeric: tabular-nums;
+}
+
+.hour-events {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ── Обёртка события ── */
+.event-wrap {
+    display: flex;
+    flex-direction: column;
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+/* ── Пилюля события ── */
+.event-pill {
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 3px solid;
+    transition: filter 0.15s;
+    user-select: none;
+}
+
+.event-pill:hover {
+    filter: brightness(.97);
+}
+
+.event-pill.hw {
+    background: var(--hw-bg);
+    border-left-color: var(--hw-border);
+    color: var(--hw-text);
+}
+
+.event-pill.ev {
+    background: var(--ev-bg);
+    border-left-color: var(--ev-border);
+    color: var(--ev-text);
+}
+
+.event-pill.ot {
+    background: var(--ot-bg);
+    border-left-color: var(--ot-border);
+    color: var(--ot-text);
+}
+
+/* Цветная точка */
+.edot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.event-pill.hw .edot {
+    background: var(--hw-border);
+}
+
+.event-pill.ev .edot {
+    background: var(--ev-border);
+}
+
+.event-pill.ot .edot {
+    background: var(--ot-border);
+}
+
+.pill-title {
+    flex: 1;
+}
+
+.pill-note-badge {
+    font-size: 11px;
+    opacity: .65;
+}
+
+.pill-remind-badge {
+    font-size: 11px;
+    opacity: .7;
+}
+
+.pill-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+}
+
+.pill-arrow {
+    font-size: 10px;
+    opacity: .4;
+    transition: transform .22s, opacity .15s;
+}
+
+.event-wrap.open .pill-arrow {
+    transform: rotate(90deg);
+    opacity: .7;
+}
+
+.pill-del {
+    opacity: .35;
+    font-size: 17px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 2px;
+    transition: opacity .15s;
+}
+
+.pill-del:hover {
+    opacity: 1;
+}
+
+/* ── Панель заметок ── */
+.notes-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease, opacity .2s;
+    opacity: 0;
+}
+
+.event-wrap.open .notes-panel {
+    max-height: 400px;
+    opacity: 1;
+}
+
+.notes-inner {
+    padding: 9px 12px 12px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-left: 3px solid;
+}
+
+.notes-inner.hw {
+    background: var(--hw-bg);
+    border-left-color: var(--hw-border);
+}
+
+.notes-inner.ev {
+    background: var(--ev-bg);
+    border-left-color: var(--ev-border);
+}
+
+.notes-inner.ot {
+    background: var(--ot-bg);
+    border-left-color: var(--ot-border);
+}
+
+.notes-label {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: .55;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.notes-ta {
+    background: rgba(255, 255, 255, .65);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    color: var(--text);
+    width: 100%;
+    resize: none;
+    font-family: inherit;
+    outline: none;
+    min-height: 60px;
+    line-height: 1.55;
+    transition: border-color .15s;
+}
+
+[data-theme="dark"] .notes-ta {
+    background: rgba(0, 0, 0, .3);
+}
+
+.notes-ta:focus {
+    border-color: var(--accent);
+}
+
+.notes-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.notes-save {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: filter .15s;
+}
+
+.notes-save.hw {
+    background: var(--hw-border);
+    color: var(--hw-text);
+}
+
+.notes-save.ev {
+    background: var(--ev-border);
+    color: var(--ev-text);
+}
+
+.notes-save.ot {
+    background: var(--ot-border);
+    color: var(--ot-text);
+}
+
+.notes-save:hover {
+    filter: brightness(.9);
+}
+
+.notif-inline {
+    font-size: 12px;
+    opacity: .65;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+}
+
+.notif-inline select {
+    font-size: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 7px;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+}
+
+/* ── Пустое состояние ── */
+.empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.empty-icon {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+/* Линия текущего времени */
+.time-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.time-line::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+/* Подсветка сегодняшнего дня в сетке */
+.day-tab.today {
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+.day-tab.today .day-num {
+    color: var(--accent);
+}
+
+/* ── Прикреплённые файлы ── */
+.notes-files {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.notes-file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+}
+
+[data-theme="dark"] .notes-file-item {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.notes-file-preview {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.notes-file-preview:hover {
+    opacity: 0.88;
+}
+
+
+
+.notes-file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+}
+
+.notes-file-dl {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.notes-file-rm {
+    opacity: 0.4;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: opacity 0.15s;
+}
+
+.notes-file-rm:hover {
+    opacity: 1;
+}
+
+
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.lightbox-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 12px;
+    object-fit: contain;
+    cursor: default;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+    position: fixed;
+    top: 20px;
+    right: 28px;
+    color: #fff;
+    font-size: 36px;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.lightbox-close:hover {
+    opacity: 1;
+}

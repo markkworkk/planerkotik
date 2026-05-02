@@ -1,0 +1,199 @@
+/* ============================================================
+   ПЛАНИРОВЩИК — main.css
+   Переменные тем, базовый layout, шапка, навигация по неделям
+   ============================================================ */
+
+/* ── Темы ── */
+:root {
+  --accent: #60a5fa;
+  --accent-soft: #dbeafe;
+  --accent-text: #1e40af;
+  --accent-border: #93c5fd;
+  --bg: #f0f6ff;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: rgba(0, 0, 0, 0.08);
+  --hw-bg: #f0fdf4;    --hw-border: #86efac;  --hw-text: #166534;
+  --ev-bg: #fef9c3;    --ev-border: #fde047;  --ev-text: #854d0e;
+  --ot-bg: #fce7f3;    --ot-border: #f9a8d4;  --ot-text: #9d174d;
+}
+
+[data-theme="dark"] {
+  --accent: #3b82f6;
+  --accent-soft: #1e3a5f;
+  --accent-text: #93c5fd;
+  --accent-border: #2563eb;
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.08);
+  --hw-bg: #052e16;    --hw-border: #166534;  --hw-text: #86efac;
+  --ev-bg: #1c1200;    --ev-border: #854d0e;  --ev-text: #fde047;
+  --ot-bg: #2d0a1e;    --ot-border: #9d174d;  --ot-text: #f9a8d4;
+}
+
+[data-theme="pink"] {
+  --accent: #ec4899;
+  --accent-soft: #fce7f3;
+  --accent-text: #9d174d;
+  --accent-border: #f9a8d4;
+  --bg: #fff0f7;
+  --card: #ffffff;
+  --text: #3b0764;
+  --muted: #a855f7;
+  --border: rgba(236, 72, 153, 0.12);
+  --hw-bg: #ede9fe;    --hw-border: #c4b5fd;  --hw-text: #5b21b6;
+  --ev-bg: #fce7f3;    --ev-border: #f9a8d4;  --ev-text: #9d174d;
+  --ot-bg: #f5f3ff;    --ot-border: #ddd6fe;  --ot-text: #6d28d9;
+}
+
+/* ── Сброс ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+.app { max-width: 980px; margin: 0 auto; padding: 28px 20px 80px; }
+
+/* ── Шапка ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.logo-sub  { font-size: 13px; color: var(--muted); }
+
+.header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* ── Кнопка уведомлений ── */
+.notif-btn {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 9px; padding: 7px 13px; font-size: 13px;
+  cursor: pointer; color: var(--text);
+  display: flex; align-items: center; gap: 6px;
+  font-family: inherit; transition: background 0.15s, border-color 0.15s;
+}
+.notif-btn:hover    { background: var(--accent-soft); border-color: var(--accent-border); }
+.notif-btn.granted  { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
+
+/* ── Переключатель темы ── */
+.themes { display: flex; gap: 8px; align-items: center; }
+.theme-label { font-size: 12px; color: var(--muted); }
+.theme-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer; outline: none;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.theme-btn:hover  { transform: scale(1.18); }
+.theme-btn.active { border-color: var(--text); }
+.t-blue { background: linear-gradient(135deg, #60a5fa, #1d4ed8); }
+.t-dark { background: linear-gradient(135deg, #475569, #0f172a); }
+.t-pink { background: linear-gradient(135deg, #f472b6, #a855f7); }
+
+/* ── Баннер уведомлений ── */
+.notif-banner {
+  background: var(--accent-soft); border: 1px solid var(--accent-border);
+  border-radius: 12px; padding: 12px 16px; font-size: 13px;
+  color: var(--accent-text); margin-bottom: 16px;
+  display: none; align-items: center; gap: 10px;
+}
+.notif-banner.visible { display: flex; }
+.notif-banner button {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 7px; padding: 6px 14px; font-size: 12px;
+  cursor: pointer; font-family: inherit; font-weight: 600; white-space: nowrap;
+}
+.notif-banner .close { cursor: pointer; opacity: .5; font-size: 20px; margin-left: auto; }
+
+/* ── Режим просмотра чужого расписания ── */
+.view-banner {
+  background: var(--ot-bg); border: 1px solid var(--ot-border);
+  border-radius: 12px; padding: 10px 16px; font-size: 13px;
+  color: var(--ot-text); margin-bottom: 16px;
+  display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.view-banner.visible { display: flex; }
+.view-banner strong { font-weight: 700; }
+.view-banner button {
+  background: var(--ot-border); color: var(--ot-text); border: none;
+  border-radius: 7px; padding: 5px 12px; font-size: 12px;
+  cursor: pointer; font-family: inherit; font-weight: 600;
+}
+
+/* ── Навигация по неделям + тип недели ── */
+.nav-week { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.week-arrow {
+  background: var(--card); border: 1px solid var(--border); color: var(--text);
+  width: 34px; height: 34px; border-radius: 9px;
+  cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.week-arrow:hover { background: var(--accent-soft); }
+.week-label { font-size: 15px; font-weight: 600; }
+
+.week-type-badge {
+  background: var(--accent); color: #fff;
+  border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 700;
+  letter-spacing: .3px;
+}
+.week-type-badge.b { background: var(--ot-border); color: var(--ot-text); }
+
+/* ── Сетка дней ── */
+.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; margin-bottom: 20px; }
+.day-tab {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px 4px; text-align: center;
+  cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.day-tab:hover  { transform: translateY(-1px); border-color: var(--accent-border); }
+.day-tab.active { background: var(--accent); border-color: var(--accent); }
+.day-tab.active .day-name,
+.day-tab.active .day-num  { color: #fff; }
+.day-name { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+.day-tab.active .day-name { color: rgba(255,255,255,.75); }
+.day-num  { font-size: 20px; font-weight: 800; margin-top: 3px; }
+.day-dot  { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); margin: 5px auto 0; }
+.day-tab.active .day-dot { background: #fff; }
+.day-dot.hidden { opacity: 0; }
+
+/* ── Основная сетка ── */
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 18px; }
+@media (max-width: 700px) { .main { grid-template-columns: 1fr; } }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text); color: var(--bg);
+  padding: 10px 22px; border-radius: 24px;
+  font-size: 13px; font-weight: 500;
+  transition: transform .3s ease; z-index: 999;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+.timeline-body {
+  position: relative;   /* ← добавь эту строку */
+  padding: 8px 16px 16px;
+}
