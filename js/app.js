@@ -372,7 +372,7 @@ function renderTimeline() {
         fileInput.style.display = 'none';
         fileInput.onchange = e => {
           const file = e.target.files[0]; if (!file) return;
-          if (file.size > 3 * 1024 * 1024) { showToast('Файл больше 3MB ❌'); return; }
+          if (file.size > 10 * 1024 * 1024) { showToast('Файл больше 10MB ❌'); return; }
           const reader = new FileReader();
           reader.onload = re => {
             const cur = loadNote(dayDate, ev.title);
